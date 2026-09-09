@@ -22,3 +22,12 @@ Next slice: implement and verify the 32 × 32-bit register file with hard-wired
 
 Next slice: define the instruction decoder's control interface and implement
 the first R-type decode cases.
+
+### Evening: R-type decoder
+
+- Added field extraction for `rs1`, `rs2`, and `rd`.
+- Decoded all ten RV32I register-register ALU operations.
+- Ensured unsupported and illegal encodings cannot enable register writes.
+- Added 13 self-checking tests, including M-extension and illegal-shift cases.
+
+Next slice: add I-type ALU decoding and sign-extended immediate generation.
