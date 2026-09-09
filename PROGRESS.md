@@ -60,3 +60,15 @@ Next slice: implement the program counter with sequential and redirected updates
 - Added nine self-checking sequential-control tests.
 
 Next slice: implement branch condition evaluation for all six RV32I branches.
+
+## Day 6 — 2026-09-06
+
+### Afternoon: branch condition unit
+
+- Implemented BEQ, BNE, BLT, BGE, BLTU, and BGEU evaluation.
+- Kept signed and unsigned comparisons explicit at the module boundary.
+- Rejected both reserved branch `funct3` encodings with a safe not-taken result.
+- Added 14 self-checking simulation cases spanning true, false, and invalid paths.
+
+Next slice: integrate the existing decoder, register file, immediate generator,
+ALU, branch unit, and program counter into a minimal single-cycle core.

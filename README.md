@@ -40,6 +40,7 @@ PASS: 7 register-file checks
 PASS: 24 decoder checks
 PASS: 12 immediate-generator checks
 PASS: 9 program-counter checks
+PASS: 14 branch-unit checks
 ```
 
 This is simulation only. The design has not yet been synthesized, timed, or
@@ -53,7 +54,7 @@ validated on an FPGA.
 - [x] I, S, B, U, and J immediate generation
 - [x] I-type ALU decoder expansion
 - [x] Program counter with reset, redirect, and stall priority
-- [ ] Branch decision logic
+- [x] Branch decision logic
 - [ ] Single-cycle datapath integration
 - [ ] Memory model and small machine-code program
 - [ ] Synthesis report and FPGA validation
