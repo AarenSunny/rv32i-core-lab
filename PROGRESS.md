@@ -42,3 +42,12 @@ Next slice: add I-type ALU decoding and sign-extended immediate generation.
 - Added 12 self-checking tests across positive, negative, and boundary values.
 
 Next slice: expand the decoder for immediate ALU instructions and shifts.
+
+### Afternoon: immediate ALU decoding
+
+- Added an explicit ALU operand-source control output.
+- Decoded ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, and SRAI.
+- Rejected reserved shift-immediate encodings without enabling register writes.
+- Expanded the decoder testbench from 13 to 24 self-checking cases.
+
+Next slice: implement the program counter with sequential and redirected updates.

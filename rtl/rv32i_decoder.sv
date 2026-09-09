@@ -2,6 +2,7 @@ module rv32i_decoder (
     input  logic [31:0] instruction_i,
     output logic        valid_o,
     output logic        register_write_o,
+    output logic        alu_source_immediate_o,
     output logic [3:0]  alu_operation_o,
     output logic [4:0]  source_register_a_o,
     output logic [4:0]  source_register_b_o,
@@ -10,7 +11,8 @@ module rv32i_decoder (
     timeunit 1ns;
     timeprecision 1ps;
 
-    localparam logic [6:0] OPCODE_REGISTER = 7'b0110011;
+    localparam logic [6:0] OPCODE_REGISTER  = 7'b0110011;
+    localparam logic [6:0] OPCODE_IMMEDIATE = 7'b0010011;
 
     localparam logic [3:0] ALU_ADD  = 4'h0;
     localparam logic [3:0] ALU_SUB  = 4'h1;
@@ -37,6 +39,7 @@ module rv32i_decoder (
     always @* begin
         valid_o = 1'b0;
         register_write_o = 1'b0;
+        alu_source_immediate_o = 1'b0;
         alu_operation_o = ALU_ADD;
 
         if (opcode == OPCODE_REGISTER) begin
@@ -97,7 +100,44 @@ module rv32i_decoder (
                     alu_operation_o = ALU_ADD;
                 end
             endcase
+        end else if (opcode == OPCODE_IMMEDIATE) begin
+            valid_o = 1'b1;
+            register_write_o = 1'b1;
+            alu_source_immediate_o = 1'b1;
+
+            case (funct3)
+                3'b000: alu_operation_o = ALU_ADD;
+                3'b010: alu_operation_o = ALU_SLT;
+                3'b011: alu_operation_o = ALU_SLTU;
+                3'b100: alu_operation_o = ALU_XOR;
+                3'b110: alu_operation_o = ALU_OR;
+                3'b111: alu_operation_o = ALU_AND;
+                3'b001: begin
+                    if (funct7 == 7'b0000000) begin
+                        alu_operation_o = ALU_SLL;
+                    end else begin
+                        valid_o = 1'b0;
+                        register_write_o = 1'b0;
+                        alu_source_immediate_o = 1'b0;
+                    end
+                end
+                3'b101: begin
+                    case (funct7)
+                        7'b0000000: alu_operation_o = ALU_SRL;
+                        7'b0100000: alu_operation_o = ALU_SRA;
+                        default: begin
+                            valid_o = 1'b0;
+                            register_write_o = 1'b0;
+                            alu_source_immediate_o = 1'b0;
+                        end
+                    endcase
+                end
+                default: begin
+                    valid_o = 1'b0;
+                    register_write_o = 1'b0;
+                    alu_source_immediate_o = 1'b0;
+                end
+            endcase
         end
     end
 endmodule
-

@@ -37,7 +37,7 @@ Expected summaries:
 ```text
 PASS: 16 RV32I ALU checks
 PASS: 7 register-file checks
-PASS: 13 R-type decoder checks
+PASS: 24 decoder checks
 PASS: 12 immediate-generator checks
 ```
 
@@ -50,7 +50,7 @@ validated on an FPGA.
 - [x] 32 × 32-bit register file with hard-wired `x0`
 - [x] R-type instruction decoder
 - [x] I, S, B, U, and J immediate generation
-- [ ] I-type decoder expansion
+- [x] I-type ALU decoder expansion
 - [ ] Program counter and branch decision logic
 - [ ] Single-cycle datapath integration
 - [ ] Memory model and small machine-code program
