@@ -4,10 +4,11 @@ IVERILOG_FLAGS ?= -g2012 -Wall
 
 BUILD_DIR := build
 ALU_TEST := $(BUILD_DIR)/rv32i_alu_tb
+REGISTER_FILE_TEST := $(BUILD_DIR)/rv32i_register_file_tb
 
-.PHONY: test test-alu clean
+.PHONY: test test-alu test-register-file clean
 
-test: test-alu
+test: test-alu test-register-file
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
@@ -18,6 +19,11 @@ $(ALU_TEST): rtl/rv32i_alu.sv tb/rv32i_alu_tb.sv | $(BUILD_DIR)
 test-alu: $(ALU_TEST)
 	$(VVP) $(ALU_TEST)
 
+$(REGISTER_FILE_TEST): rtl/rv32i_register_file.sv tb/rv32i_register_file_tb.sv | $(BUILD_DIR)
+	$(IVERILOG) $(IVERILOG_FLAGS) -s rv32i_register_file_tb -o $(REGISTER_FILE_TEST) $^
+
+test-register-file: $(REGISTER_FILE_TEST)
+	$(VVP) $(REGISTER_FILE_TEST)
+
 clean:
 	rm -rf $(BUILD_DIR)
-
