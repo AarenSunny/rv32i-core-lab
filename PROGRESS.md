@@ -96,3 +96,15 @@ minimal single-cycle core before connecting branch redirects.
 
 Next slice: connect the tested branch comparator and B-type immediate to program-
 counter redirects, then verify taken and not-taken control flow.
+
+## Day 8 — 2026-09-08
+
+### Early morning: branch redirect integration
+
+- Connected branch comparisons and B-type immediates to the program counter.
+- Kept branch instructions from enabling register-file writes.
+- Verified taken and not-taken decisions plus forward and backward targets.
+- Expanded the core integration testbench from eight to 12 checks.
+
+Next slice: start MicroRT with a fixed-capacity task model and deterministic
+priority selection, leaving the RV32I memory model for portfolio-polish day.

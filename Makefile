@@ -54,7 +54,7 @@ $(BRANCH_TEST): rtl/rv32i_branch_unit.sv tb/rv32i_branch_unit_tb.sv | $(BUILD_DI
 test-branch: $(BRANCH_TEST)
 	$(VVP) $(BRANCH_TEST)
 
-$(CORE_TEST): rtl/rv32i_core.sv rtl/rv32i_alu.sv rtl/rv32i_decoder.sv \
+$(CORE_TEST): rtl/rv32i_core.sv rtl/rv32i_alu.sv rtl/rv32i_branch_unit.sv rtl/rv32i_decoder.sv \
 		rtl/rv32i_immediate_generator.sv rtl/rv32i_program_counter.sv \
 		rtl/rv32i_register_file.sv tb/rv32i_core_tb.sv | $(BUILD_DIR)
 	$(IVERILOG) $(IVERILOG_FLAGS) -s rv32i_core_tb -o $(CORE_TEST) $^

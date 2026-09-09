@@ -25,9 +25,10 @@ and writes to it are ignored. Its testbench verifies independent dual reads,
 overwrites, disabled writes, the highest register address, and `x0` behavior.
 
 The current core integration executes register-register and immediate ALU
-instructions in one cycle. Its testbench runs a dependent six-instruction
-sequence, proving that decoded operands, immediate values, ALU results,
-register writeback, and sequential program-counter updates work together.
+instructions plus conditional branches in one cycle. Its testbench runs a
+dependent instruction sequence and both forward and backward branches, proving
+that decoded operands, immediate values, ALU results, register writeback, and
+program-counter redirects work together.
 
 ## Test
 
@@ -46,7 +47,7 @@ PASS: 32 decoder checks
 PASS: 12 immediate-generator checks
 PASS: 9 program-counter checks
 PASS: 14 branch-unit checks
-PASS: 8 core-integration checks
+PASS: 12 core-integration checks
 ```
 
 This is simulation only. The design has not yet been synthesized, timed, or
@@ -62,7 +63,7 @@ validated on an FPGA.
 - [x] Program counter with reset, redirect, and stall priority
 - [x] Branch decoding and decision logic
 - [x] Single-cycle ALU datapath integration
-- [ ] Branch redirect integration
+- [x] Branch redirect integration
 - [ ] Memory model and small machine-code program
 - [ ] Synthesis report and FPGA validation
 

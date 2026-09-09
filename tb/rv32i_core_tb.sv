@@ -45,6 +45,18 @@ module rv32i_core_tb;
         };
     endfunction
 
+    function automatic logic [31:0] encode_branch_instruction(
+        input logic [12:0] immediate_value,
+        input logic [4:0] rs2,
+        input logic [4:0] rs1,
+        input logic [2:0] funct3
+    );
+        encode_branch_instruction = {
+            immediate_value[12], immediate_value[10:5], rs2, rs1, funct3,
+            immediate_value[4:1], immediate_value[11], 7'b1100011
+        };
+    endfunction
+
     task automatic execute_and_check(
         input logic [31:0] test_instruction,
         input logic [31:0] expected_pc,
@@ -65,6 +77,31 @@ module rv32i_core_tb;
             #1;
             if (program_counter !== expected_pc + 32'd4) begin
                 $fatal(1, "%s: program counter did not advance", test_name);
+            end
+            checks_run = checks_run + 1;
+            @(negedge clk);
+        end
+    endtask
+
+    task automatic branch_and_check(
+        input logic [31:0] test_instruction,
+        input logic [31:0] expected_pc,
+        input logic [31:0] expected_next_pc,
+        input string test_name
+    );
+        begin
+            instruction = test_instruction;
+            #1;
+            if (program_counter !== expected_pc || !instruction_valid ||
+                register_write) begin
+                $fatal(1, "%s: unexpected branch controls", test_name);
+            end
+
+            @(posedge clk);
+            #1;
+            if (program_counter !== expected_next_pc) begin
+                $fatal(1, "%s: expected next PC %08h, got %08h",
+                       test_name, expected_next_pc, program_counter);
             end
             checks_run = checks_run + 1;
             @(negedge clk);
@@ -119,6 +156,24 @@ module rv32i_core_tb;
             $fatal(1, "program counter did not advance past illegal instruction");
         end
         checks_run = checks_run + 1;
+        @(negedge clk);
+
+        branch_and_check(
+            encode_branch_instruction(13'd8, 5'd2, 5'd1, 3'b000),
+            32'd28, 32'd32, "BEQ not taken"
+        );
+        branch_and_check(
+            encode_branch_instruction(13'd12, 5'd2, 5'd1, 3'b001),
+            32'd32, 32'd44, "BNE taken forward"
+        );
+        branch_and_check(
+            encode_branch_instruction(13'h1ff8, 5'd1, 5'd2, 3'b100),
+            32'd44, 32'd36, "BLT taken backward"
+        );
+        branch_and_check(
+            encode_branch_instruction(13'd8, 5'd1, 5'd2, 3'b101),
+            32'd36, 32'd40, "BGE not taken"
+        );
 
         $display("PASS: %0d core-integration checks", checks_run);
         $finish;

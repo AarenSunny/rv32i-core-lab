@@ -22,6 +22,9 @@ module rv32i_core (
     logic [31:0] register_data_b;
     logic [31:0] immediate;
     logic immediate_valid;
+    logic branch_condition_valid;
+    logic branch_taken;
+    logic [31:0] branch_target;
     logic [31:0] alu_rhs;
     logic alu_zero;
 
@@ -29,8 +32,8 @@ module rv32i_core (
         .clk_i(clk_i),
         .reset_ni(reset_ni),
         .stall_i(1'b0),
-        .redirect_i(1'b0),
-        .redirect_address_i(32'b0),
+        .redirect_i(reset_ni && instruction_valid_o && decoder_branch && branch_taken),
+        .redirect_address_i(branch_target),
         .program_counter_o(program_counter_o)
     );
 
@@ -52,11 +55,14 @@ module rv32i_core (
         .valid_o(immediate_valid)
     );
 
-    assign instruction_valid_o = decoder_valid && !decoder_branch &&
-        (!alu_source_immediate || immediate_valid);
+    assign instruction_valid_o = decoder_valid &&
+        (decoder_branch
+            ? (immediate_valid && branch_condition_valid)
+            : (!alu_source_immediate || immediate_valid));
     assign register_write_o = reset_ni && instruction_valid_o &&
         decoder_register_write;
     assign alu_rhs = alu_source_immediate ? immediate : register_data_b;
+    assign branch_target = program_counter_o + immediate;
 
     rv32i_register_file register_file (
         .clk_i(clk_i),
@@ -75,5 +81,13 @@ module rv32i_core (
         .operation_i(alu_operation),
         .result_o(writeback_data_o),
         .zero_o(alu_zero)
+    );
+
+    rv32i_branch_unit branch_unit (
+        .funct3_i(instruction_i[14:12]),
+        .lhs_i(register_data_a),
+        .rhs_i(register_data_b),
+        .valid_o(branch_condition_valid),
+        .taken_o(branch_taken)
     );
 endmodule
