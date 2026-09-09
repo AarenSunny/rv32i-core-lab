@@ -4,7 +4,7 @@ RV32I Core Lab is a from-scratch, educational 32-bit RISC-V processor project
 written in SystemVerilog. The goal is a small single-cycle core with a clear
 datapath, self-checking verification, and documented design decisions.
 
-## Current milestone: datapath primitives
+## Current milestone: integrated ALU execution
 
 The first working block is a combinational ALU implementing the operations
 needed by the RV32I integer datapath:
@@ -24,6 +24,11 @@ write port. Register `x0` is not physically stored, so reads always return zero
 and writes to it are ignored. Its testbench verifies independent dual reads,
 overwrites, disabled writes, the highest register address, and `x0` behavior.
 
+The current core integration executes register-register and immediate ALU
+instructions in one cycle. Its testbench runs a dependent six-instruction
+sequence, proving that decoded operands, immediate values, ALU results,
+register writeback, and sequential program-counter updates work together.
+
 ## Test
 
 Requirements: Icarus Verilog 13 or another SystemVerilog-compatible simulator.
@@ -41,6 +46,7 @@ PASS: 32 decoder checks
 PASS: 12 immediate-generator checks
 PASS: 9 program-counter checks
 PASS: 14 branch-unit checks
+PASS: 8 core-integration checks
 ```
 
 This is simulation only. The design has not yet been synthesized, timed, or
@@ -55,7 +61,8 @@ validated on an FPGA.
 - [x] I-type ALU decoder expansion
 - [x] Program counter with reset, redirect, and stall priority
 - [x] Branch decoding and decision logic
-- [ ] Single-cycle datapath integration
+- [x] Single-cycle ALU datapath integration
+- [ ] Branch redirect integration
 - [ ] Memory model and small machine-code program
 - [ ] Synthesis report and FPGA validation
 

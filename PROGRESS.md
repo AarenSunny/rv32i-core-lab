@@ -82,3 +82,17 @@ ALU, branch unit, and program counter into a minimal single-cycle core.
 
 Next slice: integrate register-register and immediate ALU execution into a
 minimal single-cycle core before connecting branch redirects.
+
+## Day 7 — 2026-09-07
+
+### Morning: single-cycle ALU integration
+
+- Connected the decoder, register file, immediate generator, ALU, and program
+  counter in a minimal core module.
+- Executed a dependent six-instruction register/immediate sequence in simulation.
+- Verified writeback dependencies, sign-extended immediates, and sequential PC
+  advancement with eight self-checking integration cases.
+- Kept branch execution explicitly out of scope until redirect control is wired.
+
+Next slice: connect the tested branch comparator and B-type immediate to program-
+counter redirects, then verify taken and not-taken control flow.

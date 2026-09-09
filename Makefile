@@ -9,10 +9,11 @@ DECODER_TEST := $(BUILD_DIR)/rv32i_decoder_tb
 IMMEDIATE_TEST := $(BUILD_DIR)/rv32i_immediate_generator_tb
 PROGRAM_COUNTER_TEST := $(BUILD_DIR)/rv32i_program_counter_tb
 BRANCH_TEST := $(BUILD_DIR)/rv32i_branch_unit_tb
+CORE_TEST := $(BUILD_DIR)/rv32i_core_tb
 
-.PHONY: test test-alu test-register-file test-decoder test-immediate test-program-counter test-branch clean
+.PHONY: test test-alu test-register-file test-decoder test-immediate test-program-counter test-branch test-core clean
 
-test: test-alu test-register-file test-decoder test-immediate test-program-counter test-branch
+test: test-alu test-register-file test-decoder test-immediate test-program-counter test-branch test-core
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
@@ -52,6 +53,14 @@ $(BRANCH_TEST): rtl/rv32i_branch_unit.sv tb/rv32i_branch_unit_tb.sv | $(BUILD_DI
 
 test-branch: $(BRANCH_TEST)
 	$(VVP) $(BRANCH_TEST)
+
+$(CORE_TEST): rtl/rv32i_core.sv rtl/rv32i_alu.sv rtl/rv32i_decoder.sv \
+		rtl/rv32i_immediate_generator.sv rtl/rv32i_program_counter.sv \
+		rtl/rv32i_register_file.sv tb/rv32i_core_tb.sv | $(BUILD_DIR)
+	$(IVERILOG) $(IVERILOG_FLAGS) -s rv32i_core_tb -o $(CORE_TEST) $^
+
+test-core: $(CORE_TEST)
+	$(VVP) $(CORE_TEST)
 
 clean:
 	rm -rf $(BUILD_DIR)
