@@ -72,3 +72,13 @@ Next slice: implement branch condition evaluation for all six RV32I branches.
 
 Next slice: integrate the existing decoder, register file, immediate generator,
 ALU, branch unit, and program counter into a minimal single-cycle core.
+
+### Evening: branch decoder controls
+
+- Recognized all six legal RV32I branch encodings in the instruction decoder.
+- Added a dedicated branch control signal without enabling register writes.
+- Rejected the two reserved branch encodings before they reach the datapath.
+- Expanded the decoder testbench from 24 to 32 self-checking cases.
+
+Next slice: integrate register-register and immediate ALU execution into a
+minimal single-cycle core before connecting branch redirects.

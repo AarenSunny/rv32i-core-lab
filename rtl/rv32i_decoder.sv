@@ -2,6 +2,7 @@ module rv32i_decoder (
     input  logic [31:0] instruction_i,
     output logic        valid_o,
     output logic        register_write_o,
+    output logic        branch_o,
     output logic        alu_source_immediate_o,
     output logic [3:0]  alu_operation_o,
     output logic [4:0]  source_register_a_o,
@@ -13,6 +14,7 @@ module rv32i_decoder (
 
     localparam logic [6:0] OPCODE_REGISTER  = 7'b0110011;
     localparam logic [6:0] OPCODE_IMMEDIATE = 7'b0010011;
+    localparam logic [6:0] OPCODE_BRANCH    = 7'b1100011;
 
     localparam logic [3:0] ALU_ADD  = 4'h0;
     localparam logic [3:0] ALU_SUB  = 4'h1;
@@ -39,6 +41,7 @@ module rv32i_decoder (
     always @* begin
         valid_o = 1'b0;
         register_write_o = 1'b0;
+        branch_o = 1'b0;
         alu_source_immediate_o = 1'b0;
         alu_operation_o = ALU_ADD;
 
@@ -136,6 +139,17 @@ module rv32i_decoder (
                     valid_o = 1'b0;
                     register_write_o = 1'b0;
                     alu_source_immediate_o = 1'b0;
+                end
+            endcase
+        end else if (opcode == OPCODE_BRANCH) begin
+            case (funct3)
+                3'b000, 3'b001, 3'b100, 3'b101, 3'b110, 3'b111: begin
+                    valid_o = 1'b1;
+                    branch_o = 1'b1;
+                end
+                default: begin
+                    valid_o = 1'b0;
+                    branch_o = 1'b0;
                 end
             endcase
         end

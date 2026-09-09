@@ -37,7 +37,7 @@ Expected summaries:
 ```text
 PASS: 16 RV32I ALU checks
 PASS: 7 register-file checks
-PASS: 24 decoder checks
+PASS: 32 decoder checks
 PASS: 12 immediate-generator checks
 PASS: 9 program-counter checks
 PASS: 14 branch-unit checks
@@ -54,7 +54,7 @@ validated on an FPGA.
 - [x] I, S, B, U, and J immediate generation
 - [x] I-type ALU decoder expansion
 - [x] Program counter with reset, redirect, and stall priority
-- [x] Branch decision logic
+- [x] Branch decoding and decision logic
 - [ ] Single-cycle datapath integration
 - [ ] Memory model and small machine-code program
 - [ ] Synthesis report and FPGA validation

@@ -15,6 +15,7 @@ module rv32i_decoder_tb;
     logic [31:0] instruction;
     logic valid;
     logic register_write;
+    logic branch;
     logic alu_source_immediate;
     logic [3:0] alu_operation;
     logic [4:0] source_register_a;
@@ -26,6 +27,7 @@ module rv32i_decoder_tb;
         .instruction_i(instruction),
         .valid_o(valid),
         .register_write_o(register_write),
+        .branch_o(branch),
         .alu_source_immediate_o(alu_source_immediate),
         .alu_operation_o(alu_operation),
         .source_register_a_o(source_register_a),
@@ -38,6 +40,14 @@ module rv32i_decoder_tb;
         input logic [2:0] funct3
     );
         encode_register_instruction = {funct7, 5'd11, 5'd7, funct3, 5'd13, 7'b0110011};
+    endfunction
+
+    function automatic logic [31:0] encode_branch_instruction(
+        input logic [2:0] funct3
+    );
+        encode_branch_instruction = {
+            1'b0, 6'b000100, 5'd11, 5'd7, funct3, 4'b1000, 1'b0, 7'b1100011
+        };
     endfunction
 
     function automatic logic [31:0] encode_immediate_instruction(
@@ -58,7 +68,7 @@ module rv32i_decoder_tb;
         begin
             instruction = encode_register_instruction(funct7, funct3);
             #1;
-            if (!valid || !register_write || alu_source_immediate ||
+            if (!valid || !register_write || branch || alu_source_immediate ||
                 alu_operation !== expected_operation) begin
                 $fatal(1, "%s: unexpected decoder controls", test_name);
             end
@@ -79,12 +89,29 @@ module rv32i_decoder_tb;
         begin
             instruction = encode_immediate_instruction(immediate_value, funct3);
             #1;
-            if (!valid || !register_write || !alu_source_immediate ||
+            if (!valid || !register_write || branch || !alu_source_immediate ||
                 alu_operation !== expected_operation) begin
                 $fatal(1, "%s: unexpected immediate decoder controls", test_name);
             end
             if (source_register_a !== 5'd7 || destination_register !== 5'd13) begin
                 $fatal(1, "%s: register addresses were not extracted correctly", test_name);
+            end
+            checks_run = checks_run + 1;
+        end
+    endtask
+
+    task automatic check_branch(
+        input logic [2:0] funct3,
+        input string test_name
+    );
+        begin
+            instruction = encode_branch_instruction(funct3);
+            #1;
+            if (!valid || register_write || !branch || alu_source_immediate) begin
+                $fatal(1, "%s: unexpected branch decoder controls", test_name);
+            end
+            if (source_register_a !== 5'd7 || source_register_b !== 5'd11) begin
+                $fatal(1, "%s: branch register addresses were not extracted correctly", test_name);
             end
             checks_run = checks_run + 1;
         end
@@ -97,7 +124,7 @@ module rv32i_decoder_tb;
         begin
             instruction = test_instruction;
             #1;
-            if (valid || register_write || alu_source_immediate) begin
+            if (valid || register_write || branch || alu_source_immediate) begin
                 $fatal(1, "%s: illegal instruction enabled architectural state", test_name);
             end
             checks_run = checks_run + 1;
@@ -126,6 +153,13 @@ module rv32i_decoder_tb;
         check_immediate(12'b0000000_11111, 3'b101, ALU_SRL, "SRLI");
         check_immediate(12'b0100000_11111, 3'b101, ALU_SRA, "SRAI");
 
+        check_branch(3'b000, "BEQ");
+        check_branch(3'b001, "BNE");
+        check_branch(3'b100, "BLT");
+        check_branch(3'b101, "BGE");
+        check_branch(3'b110, "BLTU");
+        check_branch(3'b111, "BGEU");
+
         check_invalid(32'h00000003, "unsupported load opcode");
         check_invalid(encode_register_instruction(7'b0000001, 3'b000),
                       "unsupported multiply encoding");
@@ -135,6 +169,8 @@ module rv32i_decoder_tb;
                       "illegal SLLI encoding");
         check_invalid(encode_immediate_instruction(12'b1111111_00001, 3'b101),
                       "illegal right-shift immediate encoding");
+        check_invalid(encode_branch_instruction(3'b010), "reserved branch encoding 010");
+        check_invalid(encode_branch_instruction(3'b011), "reserved branch encoding 011");
 
         $display("PASS: %0d decoder checks", checks_run);
         $finish;
