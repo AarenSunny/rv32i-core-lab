@@ -51,3 +51,12 @@ Next slice: expand the decoder for immediate ALU instructions and shifts.
 - Expanded the decoder testbench from 13 to 24 self-checking cases.
 
 Next slice: implement the program counter with sequential and redirected updates.
+
+### Evening: program counter
+
+- Implemented asynchronous reset and four-byte sequential advancement.
+- Added explicit redirect and stall controls with documented priority.
+- Verified redirect-over-stall behavior and 32-bit address wraparound.
+- Added nine self-checking sequential-control tests.
+
+Next slice: implement branch condition evaluation for all six RV32I branches.

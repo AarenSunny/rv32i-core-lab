@@ -7,10 +7,11 @@ ALU_TEST := $(BUILD_DIR)/rv32i_alu_tb
 REGISTER_FILE_TEST := $(BUILD_DIR)/rv32i_register_file_tb
 DECODER_TEST := $(BUILD_DIR)/rv32i_decoder_tb
 IMMEDIATE_TEST := $(BUILD_DIR)/rv32i_immediate_generator_tb
+PROGRAM_COUNTER_TEST := $(BUILD_DIR)/rv32i_program_counter_tb
 
-.PHONY: test test-alu test-register-file test-decoder test-immediate clean
+.PHONY: test test-alu test-register-file test-decoder test-immediate test-program-counter clean
 
-test: test-alu test-register-file test-decoder test-immediate
+test: test-alu test-register-file test-decoder test-immediate test-program-counter
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
@@ -38,6 +39,12 @@ $(IMMEDIATE_TEST): rtl/rv32i_immediate_generator.sv tb/rv32i_immediate_generator
 
 test-immediate: $(IMMEDIATE_TEST)
 	$(VVP) $(IMMEDIATE_TEST)
+
+$(PROGRAM_COUNTER_TEST): rtl/rv32i_program_counter.sv tb/rv32i_program_counter_tb.sv | $(BUILD_DIR)
+	$(IVERILOG) $(IVERILOG_FLAGS) -s rv32i_program_counter_tb -o $(PROGRAM_COUNTER_TEST) $^
+
+test-program-counter: $(PROGRAM_COUNTER_TEST)
+	$(VVP) $(PROGRAM_COUNTER_TEST)
 
 clean:
 	rm -rf $(BUILD_DIR)

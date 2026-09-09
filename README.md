@@ -39,6 +39,7 @@ PASS: 16 RV32I ALU checks
 PASS: 7 register-file checks
 PASS: 24 decoder checks
 PASS: 12 immediate-generator checks
+PASS: 9 program-counter checks
 ```
 
 This is simulation only. The design has not yet been synthesized, timed, or
@@ -51,7 +52,8 @@ validated on an FPGA.
 - [x] R-type instruction decoder
 - [x] I, S, B, U, and J immediate generation
 - [x] I-type ALU decoder expansion
-- [ ] Program counter and branch decision logic
+- [x] Program counter with reset, redirect, and stall priority
+- [ ] Branch decision logic
 - [ ] Single-cycle datapath integration
 - [ ] Memory model and small machine-code program
 - [ ] Synthesis report and FPGA validation
