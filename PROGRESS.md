@@ -31,3 +31,14 @@ the first R-type decode cases.
 - Added 13 self-checking tests, including M-extension and illegal-shift cases.
 
 Next slice: add I-type ALU decoding and sign-extended immediate generation.
+
+## Day 5 — 2026-09-05
+
+### Morning: immediate generator
+
+- Implemented I, S, B, U, and J immediate layouts.
+- Added sign extension for negative offsets and preserved implicit low zero bits.
+- Added a validity output that rejects instructions without an immediate.
+- Added 12 self-checking tests across positive, negative, and boundary values.
+
+Next slice: expand the decoder for immediate ALU instructions and shifts.
