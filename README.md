@@ -1,72 +1,30 @@
 # RV32I Core Lab
 
-RV32I Core Lab is a from-scratch, educational 32-bit RISC-V processor project
-written in SystemVerilog. The goal is a small single-cycle core with a clear
-datapath, self-checking verification, and documented design decisions.
+I'm building a 32-bit RISC-V CPU from scratch in SystemVerilog, one block at a time, with a testbench for each piece. My motivation came from hardware work I did in high school. I came back to it because I wanted to understand how a CPU really runs code at the lowest level.
 
-## Current milestone: integrated ALU execution
+## Where it's at
 
-The first working block is a combinational ALU implementing the operations
-needed by the RV32I integer datapath:
+It's a single-cycle core that can currently run:
 
-- addition and subtraction;
-- AND, OR, and XOR;
-- logical and arithmetic shifts using the low five bits of the shift amount;
-- signed and unsigned less-than comparison;
-- a zero-result flag for later branch control.
+- register and immediate ALU instructions (add, sub, shifts, compares, logic)
+- conditional branches, forward and backward
 
-The testbench checks normal results, 32-bit wraparound, signed behavior, shift-
-amount masking, the zero flag, and deterministic handling of an invalid control
-code.
+Not there yet: loads/stores (there is no memory model), jumps, or running on a real FPGA. Everything so far is simulation only.
 
-The register file provides two asynchronous read ports and one synchronous
-write port. Register `x0` is not physically stored, so reads always return zero
-and writes to it are ignored. Its testbench verifies independent dual reads,
-overwrites, disabled writes, the highest register address, and `x0` behavior.
+## Testing
 
-The current core integration executes register-register and immediate ALU
-instructions plus conditional branches in one cycle. Its testbench runs a
-dependent instruction sequence and both forward and backward branches, proving
-that decoded operands, immediate values, ALU results, register writeback, and
-program-counter redirects work together.
-
-## Test
-
-Requirements: Icarus Verilog 13 or another SystemVerilog-compatible simulator.
+Each block has its own self-checking testbench: 102 checks in total across the ALU, register file, decoder, immediate generator, PC, branch unit, and integrated core.
 
 ```sh
-make test
+make test   # needs Icarus Verilog
 ```
 
-Expected summaries:
+One detail I liked: register `x0` is supposed to always read as zero, so instead of storing it and ignoring writes, the register file just never stores it.
 
-```text
-PASS: 16 RV32I ALU checks
-PASS: 7 register-file checks
-PASS: 32 decoder checks
-PASS: 12 immediate-generator checks
-PASS: 9 program-counter checks
-PASS: 14 branch-unit checks
-PASS: 12 core-integration checks
-```
+## Next
 
-This is simulation only. The design has not yet been synthesized, timed, or
-validated on an FPGA.
+1. Memory model and load/store
+2. A small hand-assembled program running end to end
+3. Synthesize it and try it on an FPGA
 
-## Roadmap
-
-- [x] RV32I ALU and self-checking testbench
-- [x] 32 × 32-bit register file with hard-wired `x0`
-- [x] R-type instruction decoder
-- [x] I, S, B, U, and J immediate generation
-- [x] I-type ALU decoder expansion
-- [x] Program counter with reset, redirect, and stall priority
-- [x] Branch decoding and decision logic
-- [x] Single-cycle ALU datapath integration
-- [x] Branch redirect integration
-- [ ] Memory model and small machine-code program
-- [ ] Synthesis report and FPGA validation
-
-## License
-
-MIT
+Progress notes are in [`PROGRESS.md`](PROGRESS.md).
